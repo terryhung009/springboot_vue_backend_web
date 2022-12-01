@@ -10,7 +10,7 @@ import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 const app = createApp(App)
 // app.use(ElementPlus)
 app.use(ElementPlus, {
-    locale: zhCn,
+    locale: zhCn
 })
 app.use(store)
 app.use(router)
