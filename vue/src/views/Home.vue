@@ -9,25 +9,30 @@
 <!--    搜索區域-->
     <div style="margin: 10px">
       <el-input v-model="search" placeholder="請輸入關鍵字" style="width: 30%"/>
-      <el-button type="primary" style="margin-left: 10px">搜尋</el-button>
+      <el-button type="primary" style="margin-left: 10px" @click="load"
+
+      >搜尋</el-button>
 
     </div>
 <!--    資料區域-->
+
     <el-table
         :data="tableData"
         style="width: 100%"
         stripe
-        :row-class-name="tableRowClassName"
     >
       <el-table-column
           prop="id"
           label="ID"
-          sortable
-      />
+          sortable  />
       <el-table-column
           prop="username"
           label="帳號"
           sortable  />
+      <el-table-column
+          prop="password"
+          label="密碼"
+          sortable />
       <el-table-column
           prop="address"
           label="地址"
@@ -45,7 +50,7 @@
         label="性別"
         sortable />
 
-      <el-table-column fixed="right" label="Operations" width="120">
+      <el-table-column fixed="right" label="操作" width="120">
         <template #default>
           <el-button link type="primary"  @click="handleEdit"
           >編輯</el-button>
@@ -81,6 +86,9 @@
         <el-form :model="form" label-width="120px">
           <el-form-item label="帳號" prop="username">
             <el-input v-model="form.username" style="width:  80%;"/>
+          </el-form-item>
+          <el-form-item label="密碼" prop="password">
+            <el-input v-model="form.password" style="width:  80%;"/>
           </el-form-item>
           <el-form-item label="暱稱" prop="nickname">
             <el-input v-model="form.nickName" style="width:  80%;"/>
@@ -118,6 +126,8 @@
 // @ is an alias to /src
 
 
+import request from "@/utils/request";
+
 export default {
   name: 'HomeView',
   components: {
@@ -128,18 +138,42 @@ export default {
       form: {},
       search: "",
       currentPage:1,
-      total: 10 ,
-      tableDate: [],
+      pageSize:10,
+      total: 0 ,
+      tableData: [],
       dialogVisible:false,
 
     }
 
 
     },
+  created() {
+    this.load()
+
+
+
+  },
   methods:{
+    // search(){
+    //
+    // },
+    load(){
+      request.get("/api/user",{
+        params:{pageNum:this.currentPage,
+          pageSize:this.pageSize,
+          search:this.search}
+
+      }).then((res)=>{
+        console.log(res)
+        this.tableData = res.data.records
+        this.total = res.data.total
+
+      })
+    },
     add(){
       this.dialogVisible = true;
       this.form = {}
+      this.load()
     },
     handleEdit(){
 
@@ -151,6 +185,9 @@ export default {
 
     },
     save(){
+      request.post("/api/user", this.form).then((res)=>{
+        // console.log(res)
+      })
 
 
       this.dialogVisible = false
