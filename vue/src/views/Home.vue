@@ -2,7 +2,7 @@
   <div style="padding: 10px">
 <!--    功能區域-->
     <div style="margin: 10px 0">
-      <el-button type="primary">新增</el-button>
+      <el-button type="primary" @click="add">新增</el-button>
       <el-button type="primary">導入</el-button>
       <el-button type="primary">導出</el-button>
     </div>
@@ -20,18 +20,30 @@
         :row-class-name="tableRowClassName"
     >
       <el-table-column
-          prop="date"
-          label="Date"
+          prop="id"
+          label="ID"
           sortable
       />
       <el-table-column
-          prop="name"
-          label="Name"
+          prop="username"
+          label="帳號"
           sortable  />
       <el-table-column
           prop="address"
-          label="Address"
+          label="地址"
           sortable />
+      <el-table-column
+          prop="nickName"
+          label="暱稱"
+          sortable />
+      <el-table-column
+          prop="age"
+          label="年齡"
+          sortable />
+      <el-table-column
+        prop="sex"
+        label="性別"
+        sortable />
 
       <el-table-column fixed="right" label="Operations" width="120">
         <template #default>
@@ -60,6 +72,43 @@
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
       />
+      <el-dialog
+          v-model="dialogVisible"
+          title="確認"
+          width="30%"
+
+      >
+        <el-form :model="form" label-width="120px">
+          <el-form-item label="帳號" prop="username">
+            <el-input v-model="form.username" style="width:  80%;"/>
+          </el-form-item>
+          <el-form-item label="暱稱" prop="nickname">
+            <el-input v-model="form.nickName" style="width:  80%;"/>
+          </el-form-item>
+          <el-form-item label="年齡" prop="age">
+            <el-input v-model="form.age" style="width:  80%;"/>
+          </el-form-item>
+          <el-form-item label="性別" prop="sex">
+            <el-radio-group v-model="form.sex" class="ml-4">
+              <el-radio  label="男" size="large">男</el-radio>
+              <el-radio  label="女" size="large">女</el-radio>
+            </el-radio-group>
+
+          </el-form-item>
+          <el-form-item label="地址" prop="address">
+            <el-input type="textarea" v-model="form.address" style="width:  80%;"/>
+          </el-form-item>
+
+        </el-form>
+        <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="save">
+          確定
+        </el-button>
+      </span>
+        </template>
+      </el-dialog>
     </div>
 
   </div>
@@ -76,36 +125,22 @@ export default {
   },
   data(){
     return {
+      form: {},
       search: "",
       currentPage:1,
       total: 10 ,
-      tableDate: [
-        {
-          date: '2016-05-03',
-          name: 'Tom',
-          address: 'No. 189, Grove St, Los Angeles',
-        },
-        {
-          date: '2016-05-02',
-          name: 'Tom',
-          address: 'No. 189, Grove St, Los Angeles',
-        },
-        {
-          date: '2016-05-04',
-          name: 'Tom',
-          address: 'No. 189, Grove St, Los Angeles',
-        },
-        {
-          date: '2016-05-01',
-          name: 'Tom',
-          address: 'No. 189, Grove St, Los Angeles',
-        },
-      ]
+      tableDate: [],
+      dialogVisible:false,
+
     }
 
 
     },
   methods:{
+    add(){
+      this.dialogVisible = true;
+      this.form = {}
+    },
     handleEdit(){
 
     },
@@ -114,6 +149,11 @@ export default {
     },
     handleSizeChange(){
 
+    },
+    save(){
+
+
+      this.dialogVisible = false
     }
 
   }
