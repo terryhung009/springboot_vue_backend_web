@@ -34,6 +34,25 @@ public class UserController {
 
     }
 
+    @PutMapping("/user")
+    public Result update(@RequestBody User user){
+
+        userMapper.updateById(user);
+        System.out.println(Result.succ(user));
+        return Result.succ(user);
+
+
+    }
+    @DeleteMapping("/user/{id}")
+    public Result delete(@PathVariable Long id){
+
+        userMapper.deleteById(id);
+
+        return Result.succ(id);
+
+
+    }
+
     @GetMapping("/user")
     public Result findPage(@RequestParam(defaultValue = "1")  Integer pageNum,
                            @RequestParam(defaultValue = "10")  Integer pageSize,

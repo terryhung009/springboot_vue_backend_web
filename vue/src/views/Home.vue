@@ -8,7 +8,7 @@
     </div>
 <!--    搜索區域-->
     <div style="margin: 10px">
-      <el-input v-model="search" placeholder="請輸入關鍵字" style="width: 30%"/>
+      <el-input v-model="search" placeholder="請輸入關鍵字" style="width: 30%" clearable/>
       <el-button type="primary" style="margin-left: 10px" @click="load"
 
       >搜尋</el-button>
@@ -50,13 +50,19 @@
         label="性別"
         sortable />
 
-      <el-table-column fixed="right" label="操作" width="120">
-        <template #default>
-          <el-button link type="primary"  @click="handleEdit"
-          >編輯</el-button>
-          <el-popconfirm title="確認刪除嗎?">
+      <el-table-column label="操作">
+        <template #default="scope">
+          <el-button size="small" @click="handleEdit(scope.row)"
+          >編輯</el-button
+          >
+          <el-popconfirm title="確認刪除嗎?" @confirm="handleDelete(scope.row.id)">
             <template #reference>
-              <el-button link type="primary" >刪除</el-button>
+              <el-button
+                  size="small"
+                  type="danger"
+                  @click=""
+              >刪除</el-button
+              >
             </template>
           </el-popconfirm>
 
@@ -175,19 +181,77 @@ export default {
       this.form = {}
       this.load()
     },
-    handleEdit(){
+    handleEdit(row){
+      // console.log(row)
+      // console.log(this.form)
+      this.form = JSON.parse(JSON.stringify(row))
+      this.dialogVisible = true;
+      // this.save()
 
     },
-    handleCurrentChange(){
-
+    handleDelete(id){
+      console.log(id)
+      request.delete("api/user/" + id).then((res)=>{
+        console.log(res)
+        if(res.code == 200){
+          this.$message({
+            type:"success",
+            message: "更新成功"
+          })
+        }else{
+          this.$message({
+            type:"error",
+            message: res.msg
+          })
+        }
+      })
+      this.load()  //刪除之後重新讀取表格資料
     },
-    handleSizeChange(){
-
+    handleCurrentChange(pageSize){ //改變目前的頁數觸發
+      // this.pageSize= pageSize
+      this.load()
+    },
+    handleSizeChange(pageNum){ //改變每頁的個數觸發
+      this.currentPage = pageNum
+      this.load()
     },
     save(){
-      request.post("/api/user", this.form).then((res)=>{
-        // console.log(res)
-      })
+      if(this.form.id){ //更新
+        request.put("/api/user", this.form).then((res)=>{
+          console.log(res)
+          if(res.code == 200){
+            this.$message({
+              type:"success",
+              message: "更新成功"
+            })
+          }else{
+            this.$message({
+              type:"error",
+              message: res.msg
+            })
+          }
+          this.load()
+          this.dialogVisible = false
+
+
+        })
+      }else{ //新增
+        request.post("/api/user", this.form).then((res)=>{
+          console.log(res)
+          if(res.code == 200){
+            this.$message({
+              type:"success",
+              message: "新增成功"
+            })
+          }else{
+            this.$message({
+              type:"error",
+              message: res.msg
+            })
+          }
+        })
+      }
+
 
 
       this.dialogVisible = false
